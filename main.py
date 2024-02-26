@@ -5,11 +5,15 @@ import subprocess
 
 pygame.init()
 
+pygame.mixer.init()
+background_music = pygame.mixer.Sound('assets/audio/mainbgs.mp3')
+background_music.set_volume(0.5)
+background_music.play(-1)
+
 SCREEN = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("Menu")
 
 BG = pygame.image.load("assets/Background.png")
-
 
 def get_font(size): 
     return pygame.font.Font("assets/font.ttf", size)
@@ -19,16 +23,17 @@ PLAY_BACK = Button(image=None, pos=(1150, 670),
                             text_input="BACK", font=get_font(50), base_color="White", hovering_color="Green")
 
 
+
 def games():
-    buttons = [
-        {"text": "Puissance 4", "action": lambda: subprocess.run(["python", "gamesss/connect-4-master/connect4.py"])},
-        {"text": "Pong Game", "action": lambda: subprocess.run(["python", "gamesss/pong_game.py"])},
-        {"text": "Snake", "action": lambda: subprocess.run(["python", "gamesss/snake_game.py"])},
-        {"text": "Flappy Bird", "action": lambda: subprocess.run(["python", "gamesss/flappy.py"])},
+    gamex = [
+        {"text": "Puissance 4", "action": lambda: subprocess.run(["python", "gamesss/connect4/connect4.py"])},
+        {"text": "Pong Game", "action": lambda: subprocess.run(["python", "gamesss/pong/pong_game.py"])},
+        {"text": "Snake", "action": lambda: subprocess.run(["python", "gamesss/snake/snake_game.py"])},
+        {"text": "Flappy Bird", "action": lambda: subprocess.run(["python", "gamesss/flappy-bird/flappy.py"])},
     ]
 
-    button_spacing = 20  
-    column_spacing = 200 
+    button_spacing = 20
+    column_spacing = 200
 
     while True:
         GAME_MOUSE_POS = pygame.mouse.get_pos()
@@ -39,8 +44,8 @@ def games():
         GAME_RECT = GAME_TEXT.get_rect(center=(640, 100))
         SCREEN.blit(GAME_TEXT, GAME_RECT)
 
-        column1_buttons = buttons[:5]
-        column2_buttons = buttons[5:]
+        column1_buttons = gamex[:5]
+        column2_buttons = gamex[5:]
 
         for i, button_info in enumerate(column1_buttons):
             button = Button(image=None, pos=(540, 200 + i * (60 + button_spacing)),
@@ -54,7 +59,10 @@ def games():
 
             if button.checkForInput(GAME_MOUSE_POS):
                 if pygame.mouse.get_pressed()[0]:
-                    button_info["action"]()
+                    if button_info["text"] != "GAMES":
+                        pygame.mixer.stop()  # Stop the music before starting the game
+                        button_info["action"]()
+                        background_music.play(-1)  # Resume the music after the game is closed
 
         for i, button_info in enumerate(column2_buttons):
             button = Button(image=None, pos=(740 + column_spacing, 200 + i * (60 + button_spacing)),
@@ -68,7 +76,9 @@ def games():
 
             if button.checkForInput(GAME_MOUSE_POS):
                 if pygame.mouse.get_pressed()[0]:
+                    pygame.mixer.set_volume(0)  # Mute the music before starting the game
                     button_info["action"]()
+                    pygame.mixer.set_volume(0.5)  # Set the volume back to the original level after the game is closed
 
         PLAY_BACK.changeColor(GAME_MOUSE_POS)
         PLAY_BACK.update(SCREEN)
@@ -77,11 +87,15 @@ def games():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BACK.checkForInput(GAME_MOUSE_POS):
                     return
 
         pygame.display.update()
+
+
+
 
 def guide(game_name):
     while True:
@@ -107,7 +121,7 @@ def guide(game_name):
         pygame.display.update()
 
 def main_menu():
-    buttons = [
+    buttonss = [
         {"text": "GAMES", "action": games},
         {"text": "GUIDE", "action": lambda: guide("GAME")},
         {"text": "QUIT", "action": pygame.quit}
@@ -123,7 +137,7 @@ def main_menu():
 
         SCREEN.blit(MENU_TEXT, MENU_RECT)
 
-        for i, button_info in enumerate(buttons):
+        for i, button_info in enumerate(buttonss):
             button = Button(image=pygame.image.load(f"assets/{button_info['text']} Rect.png"),
                             pos=(640, 250 + i * 150),
                             text_input=button_info['text'],
