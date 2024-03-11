@@ -13,9 +13,9 @@ os.chdir(script_dir)
 pygame.mixer.init()
 
 # Charger les sons avec os.path.join pour assurer la portabilité du code entre les plateformes
-ball_bounce_sound = pygame.mixer.Sound(os.path.join(script_dir, "audio", "jump.wav"))
-score_sound = pygame.mixer.Sound(os.path.join(script_dir, "audio", "scoree.wav"))
-background_music = pygame.mixer.Sound(os.path.join(script_dir, "audio", "backgr.wav"))
+ball_bounce_sound = pygame.mixer.Sound(os.path.join(script_dir, "jump.wav"))
+score_sound = pygame.mixer.Sound(os.path.join(script_dir,"scoree.wav"))
+background_music = pygame.mixer.Sound(os.path.join(script_dir, "backgr.wav"))
 
 # Fonction pour jouer de la musique de fond dans un thread séparé
 def play_background_music():
